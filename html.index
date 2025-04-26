@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود اصطلاحات تخصصی</title>
+    <!-- لینک فونت وزیر -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+    <!-- لینک فایل استایل -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>ثبت اصطلاحات تخصصی بخش</h1>
+        <p>
+            مدیر محترم، لطفاً ۲۰ کلمه یا اصطلاح تخصصی رایج در بخش خود را به همراه معنی یا توضیح مختصر آن در فیلدهای زیر وارد کنید.
+            پس از وارد کردن معنی هر کلمه، با زدن کلید Enter به ردیف بعدی بروید. در نهایت دکمه "ثبت نهایی" را بزنید.
+        </p>
+
+        <form id="term-form" action="https://formspree.io/f/mnndnzap" method="POST">
+            <!-- فیلد مخفی برای موضوع ایمیل دریافتی -->
+            <input type="hidden" name="_subject" value="لیست اصطلاحات تخصصی جدید">
+
+            <div id="term-list">
+                <!-- ردیف اول به صورت پیش‌فرض -->
+                <div class="term-pair">
+                    <input type="text" name="term[]" class="term-input" placeholder="کلمه/اصطلاح تخصصی ۱" required>
+                    <input type="text" name="definition[]" class="definition-input" placeholder="معنی/توضیح ۱" required>
+                </div>
+                <!-- ردیف‌های بعدی اینجا با جاوااسکریپت اضافه می‌شوند -->
+            </div>
+
+            <button type="submit" class="submit-btn">ثبت نهایی اصطلاحات</button>
+        </form>
+        <p class="counter">تعداد اصطلاحات وارد شده: <span id="term-count">1</span></p>
+    </div>
+
+    <!-- لینک فایل جاوااسکریپت -->
+    <script src="script.js"></script>
+</body>
+</html>

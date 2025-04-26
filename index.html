@@ -4,34 +4,286 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ورود اصطلاحات تخصصی</title>
+    <!-- لینک فونت وزیر -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
-    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* --- Start CSS --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            direction: rtl;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #4a90e2;
+            overflow: hidden; /* برای پاک کردن float ها اگر استفاده شود */
+        }
+
+        h1 {
+            color: #4a90e2;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        p.description { /* کلاس جدید برای پاراگراف توضیحات */
+            margin-bottom: 25px;
+            color: #555;
+            text-align: justify;
+        }
+
+        /* پیام‌های موفقیت و خطا */
+        .message-area {
+             margin-bottom: 20px;
+             text-align: center;
+             padding: 15px;
+             border-radius: 8px;
+             display: none; /* در ابتدا مخفی */
+        }
+        .success-message {
+            background-color: #d4edda; /* سبز روشن */
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error-message {
+            background-color: #f8d7da; /* قرمز روشن */
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+         .message-area p {
+             margin-bottom: 0;
+        }
+
+        #term-form {
+            margin-top: 10px; /* کمی فاصله کمتر */
+        }
+
+        .user-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px; /* کمی کوچکتر برای جا شدن بهتر */
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.95rem; /* کمی کوچکتر */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 5px rgba(74, 144, 226, 0.4);
+            outline: none;
+        }
+        .form-group input[type="text"].input-error, /* برای فیلد نام و بخش هم اعمال شود */
+        .term-pair input[type="text"].input-error {
+             border-color: #dc3545 !important; /* قرمز با اولویت بالا */
+             background-color: #fff3f4;
+        }
+
+
+        .separator {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 25px 0;
+        }
+
+        #term-list {
+            margin-bottom: 20px;
+        }
+
+        .term-pair {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .term-pair input[type="text"] {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .term-pair input[type="text"]:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 5px rgba(74, 144, 226, 0.4);
+            outline: none;
+        }
+
+        body {
+            counter-reset: term-counter;
+        }
+
+        .term-pair::before {
+            counter-increment: term-counter;
+            content: counter(term-counter);
+            background-color: #4a90e2;
+            color: white;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 50%;
+            min-width: 30px;
+            height: 30px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            flex-shrink: 0; /* جلوگیری از کوچک شدن شماره */
+        }
+
+         /* بخش دکمه افزودن و شمارنده */
+         .controls {
+             display: flex;
+             justify-content: space-between; /* دکمه و شمارنده در دو طرف */
+             align-items: center;
+             margin-bottom: 20px;
+             flex-wrap: wrap; /* برای موبایل */
+             gap: 10px;
+         }
+
+        .add-btn {
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            /* margin-bottom: 0;  حذف شد، چون در فلکس باکس است */
+        }
+        .add-btn:disabled { /* استایل برای دکمه غیرفعال */
+             opacity: 0.5;
+             cursor: not-allowed;
+         }
+
+        .add-btn:hover:not(:disabled) { /* هاور فقط برای دکمه فعال */
+            background-color: #5a6268;
+        }
+
+        .counter {
+            color: #777;
+            font-size: 0.9rem;
+            /* margin-bottom: 0; حذف شد */
+            white-space: nowrap; /* جلوگیری از شکستن متن شمارنده */
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background-color: #218838;
+        }
+         .submit-btn:disabled {
+             opacity: 0.6;
+             cursor: wait; /* نمایش نشانگر انتظار */
+         }
+
+        .submit-btn:active:not(:disabled) {
+            transform: scale(0.99);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                 padding: 20px;
+            }
+            .user-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+             .term-pair {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+             }
+             .term-pair::before {
+                 align-self: flex-start;
+                 margin-bottom: 5px;
+             }
+             .controls {
+                 flex-direction: column-reverse; /* شمارنده بالا، دکمه پایین */
+                 align-items: flex-start; /* همه به سمت راست تراز شوند */
+                 gap: 15px;
+             }
+             .add-btn {
+                 width: 100%; /* دکمه تمام عرض شود */
+                 text-align: center;
+             }
+        }
+        /* --- End CSS --- */
+    </style>
 </head>
 <body>
 
     <div class="container">
         <h1>ثبت اصطلاحات تخصصی بخش</h1>
-        <p>
+        <p class="description">
             مدیر محترم، لطفاً نام خود و بخش مربوطه را وارد کرده و سپس تا ۲۰ کلمه یا اصطلاح تخصصی رایج در بخش خود را به همراه معنی آن وارد کنید.
             برای افزودن ردیف جدید، هر دو فیلد ردیف آخر را پر کرده و Enter بزنید یا روی دکمه "افزودن اصطلاح جدید" کلیک کنید.
             در نهایت دکمه "ثبت نهایی" را بزنید.
         </p>
 
-        <!-- پیام موفقیت (در ابتدا مخفی) -->
-        <div id="success-message" class="success-message" style="display: none;">
-            <p>✅ اصطلاحات شما با موفقیت ثبت شد. از همکاری شما متشکریم!</p>
+        <!-- ناحیه نمایش پیام ها -->
+        <div id="message-area" class="message-area">
+            <p id="message-text"></p>
         </div>
 
-         <!-- پیام خطا (در ابتدا مخفی) -->
-         <div id="error-message" class="error-message" style="display: none;">
-             <p>❌ خطایی در ارسال رخ داد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.</p>
-         </div>
-
-        <form id="term-form" action="https://formspree.io/f/mnndnzap" method="POST">
-            <!-- فیلد مخفی برای موضوع ایمیل -->
+        <form id="term-form" action="https://formspree.io/f/mnndnzap" method="POST" novalidate> <!-- novalidate از اعتبارسنجی پیش فرض مرورگر جلوگیری میکند تا خودمان مدیریت کنیم -->
             <input type="hidden" name="_subject" value="لیست اصطلاحات تخصصی جدید">
 
-            <!-- فیلدهای نام و بخش -->
             <div class="user-info">
                  <div class="form-group">
                      <label for="user-name">نام شما:</label>
@@ -46,23 +298,303 @@
             <hr class="separator">
 
             <div id="term-list">
-                <!-- ردیف اول به صورت پیش‌فرض -->
                 <div class="term-pair">
                     <input type="text" name="term[]" class="term-input" placeholder="کلمه/اصطلاح تخصصی ۱" required>
                     <input type="text" name="definition[]" class="definition-input" placeholder="معنی/توضیح ۱" required>
                 </div>
-                <!-- ردیف‌های بعدی اینجا با جاوااسکریپت اضافه می‌شوند -->
             </div>
 
-             <!-- دکمه افزودن دستی -->
-            <button type="button" id="add-term-btn" class="add-btn">افزودن اصطلاح جدید (+)</button>
-
-            <p class="counter">تعداد اصطلاحات وارد شده: <span id="term-count">1</span> / 20</p>
+            <div class="controls">
+                <button type="button" id="add-term-btn" class="add-btn">افزودن اصطلاح جدید (+)</button>
+                 <p class="counter">تعداد اصطلاحات وارد شده: <span id="term-count">1</span> / 20</p>
+            </div>
 
             <button type="submit" class="submit-btn">ثبت نهایی اصطلاحات</button>
         </form>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // --- Start JavaScript ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const termList = document.getElementById('term-list');
+            const termForm = document.getElementById('term-form');
+            const termCountSpan = document.getElementById('term-count');
+            const addTermBtn = document.getElementById('add-term-btn');
+            const messageArea = document.getElementById('message-area');
+            const messageText = document.getElementById('message-text');
+            const submitButton = termForm.querySelector('.submit-btn'); // انتخاب دکمه ثبت
+            let termCounter = 1;
+            const maxTerms = 20;
+
+            // --- پاک کردن کلاس خطا از یک فیلد ---
+            function clearError(inputElement) {
+                inputElement.classList.remove('input-error');
+            }
+
+             // --- نمایش پیام ---
+            function showMessage(message, isSuccess) {
+                messageText.textContent = message;
+                messageArea.className = 'message-area'; // Reset classes
+                messageArea.classList.add(isSuccess ? 'success-message' : 'error-message');
+                messageArea.style.display = 'block';
+             }
+
+             // --- مخفی کردن پیام ---
+             function hideMessage() {
+                 messageArea.style.display = 'none';
+                 messageText.textContent = '';
+             }
+
+            // --- تابع برای بررسی پر بودن آخرین ردیف ---
+            function isLastPairFilled(markErrors = false) {
+                const lastPair = termList.querySelector('.term-pair:last-child');
+                if (!lastPair) return true; // اگر هیچ ردیفی نیست
+
+                const lastTermInput = lastPair.querySelector('.term-input');
+                const lastDefinitionInput = lastPair.querySelector('.definition-input');
+
+                let isFilled = true;
+
+                // پاک کردن خطاهای قبلی فقط اگر قرار است خطای جدید مارک شود
+                if (markErrors) {
+                    clearError(lastTermInput);
+                    clearError(lastDefinitionInput);
+                }
+
+                if (lastTermInput.value.trim() === '') {
+                    if (markErrors) lastTermInput.classList.add('input-error');
+                    isFilled = false;
+                }
+                if (lastDefinitionInput.value.trim() === '') {
+                     if (markErrors) lastDefinitionInput.classList.add('input-error');
+                    isFilled = false;
+                }
+                return isFilled;
+            }
+
+             // --- بررسی پر بودن فیلدهای نام و بخش ---
+             function isUserInfoFilled(markErrors = false) {
+                 const userNameInput = document.getElementById('user-name');
+                 const departmentInput = document.getElementById('department');
+                 let isFilled = true;
+
+                 if (markErrors) {
+                     clearError(userNameInput);
+                     clearError(departmentInput);
+                 }
+
+                 if (userNameInput.value.trim() === '') {
+                     if (markErrors) userNameInput.classList.add('input-error');
+                     isFilled = false;
+                 }
+                 if (departmentInput.value.trim() === '') {
+                     if (markErrors) departmentInput.classList.add('input-error');
+                     isFilled = false;
+                 }
+                 return isFilled;
+             }
+
+            // --- تابع برای اضافه کردن ردیف جدید ---
+            function addTermPair() {
+                hideMessage(); // مخفی کردن پیام های قبلی
+                // 1. شرط پر بودن ردیف آخر (با علامت گذاری خطا)
+                if (!isLastPairFilled(true)) {
+                     // alert("لطفاً ابتدا فیلدهای خالی ردیف آخر را پر کنید."); // Alert حذف شد
+                     // فوکوس روی اولین فیلد خالی در ردیف آخر
+                     const lastPair = termList.querySelector('.term-pair:last-child');
+                     const firstEmpty = lastPair.querySelector('input.input-error');
+                     if (firstEmpty) firstEmpty.focus();
+                     return;
+                }
+
+                // 2. شرط حداکثر تعداد
+                if (termCounter >= maxTerms) {
+                    // alert(`شما به حداکثر تعداد اصطلاح (${maxTerms}) رسیده‌اید.`);
+                    showMessage(`شما به حداکثر تعداد اصطلاح (${maxTerms}) رسیده‌اید.`, false);
+                    addTermBtn.disabled = true; // دکمه را غیرفعال کن
+                    return;
+                }
+
+                termCounter++;
+
+                const newPair = document.createElement('div');
+                newPair.classList.add('term-pair');
+
+                const termInput = document.createElement('input');
+                termInput.type = 'text';
+                termInput.name = 'term[]';
+                termInput.classList.add('term-input');
+                termInput.placeholder = `کلمه/اصطلاح تخصصی ${termCounter}`;
+                termInput.required = true;
+                termInput.addEventListener('input', () => clearError(termInput)); // پاک کردن خطا هنگام تایپ
+
+                const definitionInput = document.createElement('input');
+                definitionInput.type = 'text';
+                definitionInput.name = 'definition[]';
+                definitionInput.classList.add('definition-input');
+                definitionInput.placeholder = `معنی/توضیح ${termCounter}`;
+                definitionInput.required = true;
+                definitionInput.addEventListener('keydown', handleEnterKey);
+                definitionInput.addEventListener('input', () => clearError(definitionInput)); // پاک کردن خطا هنگام تایپ
+
+                newPair.appendChild(termInput);
+                newPair.appendChild(definitionInput);
+                termList.appendChild(newPair);
+
+                updateCounterDisplay();
+
+                // غیرفعال کردن دکمه افزودن اگر به حد نصاب رسیدیم
+                if (termCounter >= maxTerms) {
+                    addTermBtn.disabled = true;
+                }
+
+                termInput.focus(); // فوکوس روی فیلد کلمه جدید
+            }
+
+            // --- تابع برای مدیریت کلید Enter ---
+            function handleEnterKey(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // همیشه از ارسال فرم با Enter جلوگیری کن
+
+                    const allDefinitionInputs = termList.querySelectorAll('.definition-input');
+                    // فقط اگر در آخرین فیلد معنی Enter زده شد، تلاش برای اضافه کردن ردیف جدید
+                    if (event.target === allDefinitionInputs[allDefinitionInputs.length - 1]) {
+                        addTermPair(); // این تابع خودش همه شرط ها رو چک میکنه
+                    } else {
+                        // اگر Enter در فیلدهای میانی زده شد، به فیلد کلمه ردیف بعدی برو
+                        try { // اضافه کردن try-catch برای اطمینان
+                           const currentPair = event.target.closest('.term-pair');
+                           const nextPair = currentPair.nextElementSibling;
+                           if (nextPair) {
+                               const nextTermInput = nextPair.querySelector('.term-input');
+                               if (nextTermInput) {
+                                   nextTermInput.focus();
+                               }
+                           } else {
+                               // اگر آخرین بود ولی هنوز به max نرسیده بودیم
+                               if (termCounter < maxTerms) {
+                                  addTermPair(); // تلاش برای اضافه کردن ردیف جدید
+                               }
+                           }
+                        } catch (e) {
+                           console.error("Error focusing next input:", e);
+                        }
+                    }
+                }
+            }
+
+            // --- تابع برای آپدیت شمارنده روی صفحه ---
+            function updateCounterDisplay() {
+                termCountSpan.textContent = termCounter;
+            }
+
+            // --- مدیریت کلیک روی دکمه افزودن دستی ---
+             addTermBtn.addEventListener('click', (event) => {
+                 event.preventDefault(); // اطمینان از عدم ارسال فرم
+                 addTermPair();
+             });
+
+            // --- مدیریت ارسال فرم با AJAX ---
+            termForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // جلوگیری از ارسال پیش‌فرض فرم
+                hideMessage(); // مخفی کردن پیام های قبلی
+
+                // 1. بررسی پر بودن فیلدهای نام و بخش (با علامت گذاری خطا)
+                 if (!isUserInfoFilled(true)) {
+                    // alert('لطفاً نام و بخش خود را وارد کنید.'); // Alert حذف شد
+                    showMessage('لطفاً نام و بخش خود را وارد کنید.', false);
+                     // فوکوس روی اولین فیلد خالی اطلاعات کاربر
+                     const userNameInput = document.getElementById('user-name');
+                     const departmentInput = document.getElementById('department');
+                     if (userNameInput.value.trim() === '') userNameInput.focus();
+                     else if (departmentInput.value.trim() === '') departmentInput.focus();
+                     return; // ارسال متوقف شود
+                 }
+
+                // 2. بررسی پر بودن آخرین ردیف اصطلاح (با علامت گذاری خطا)
+                // (حتی اگر فقط یک ردیف باشد، باید پر باشد)
+                if (!isLastPairFilled(true)) {
+                    // alert("لطفاً قبل از ثبت نهایی، فیلدهای خالی ردیف آخر را پر کنید."); // Alert حذف شد
+                     showMessage("لطفاً فیلدهای خالی اصطلاحات را پر کنید.", false);
+                     const lastPair = termList.querySelector('.term-pair:last-child');
+                     const firstEmpty = lastPair.querySelector('input.input-error');
+                     if (firstEmpty) firstEmpty.focus();
+                     return; // ارسال متوقف شود
+                 }
+
+                // --- اگر همه چیز معتبر بود ---
+                const formData = new FormData(termForm);
+                const originalButtonText = submitButton.textContent;
+
+                // نمایش حالت لودینگ
+                submitButton.disabled = true;
+                submitButton.textContent = 'در حال ارسال...';
+
+                fetch(termForm.action, {
+                    method: termForm.method,
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json' // بسیار مهم برای دریافت پاسخ JSON از Formspree
+                    }
+                }).then(response => {
+                     // بررسی وضعیت پاسخ (مهم)
+                     if (response.ok) {
+                         // **موفقیت آمیز**
+                         termForm.reset(); // پاک کردن فرم
+                         termList.innerHTML = ''; // پاک کردن لیست اصطلاحات اضافه شده
+                         termCounter = 0; // ریست شمارنده داخلی
+                         addTermPair(); // اضافه کردن یک ردیف خالی جدید برای شروع مجدد
+                         showMessage('✅ فرم با موفقیت ثبت شد.', true); // نمایش پیام موفقیت سفارشی
+                         termForm.style.display = 'block'; // اطمینان از نمایش فرم (ممکن است بخواهید مخفی کنید)
+                         // window.scrollTo(0, 0); // اسکرول به بالای صفحه (اختیاری)
+
+                     } else {
+                         // **خطا در سمت سرور یا Formspree**
+                         // تلاش برای خواندن پیام خطای JSON از Formspree
+                         response.json().then(data => {
+                             const errorMsg = data?.errors?.map(e => e.message).join(', ') || 'خطای نامشخص در سرور.';
+                             showMessage(`❌ خطایی در ارسال رخ داد: ${errorMsg}`, false);
+                         }).catch(() => {
+                              // اگر پاسخ JSON نبود یا خطای دیگری رخ داد
+                             showMessage(`❌ خطایی در ارسال رخ داد (کد: ${response.status}). لطفاً دوباره تلاش کنید.`, false);
+                         });
+                     }
+                 }).catch(error => {
+                    // **خطای شبکه یا Fetch**
+                    console.error('Fetch Error:', error);
+                    showMessage('❌ خطای شبکه. لطفاً اتصال اینترنت خود را بررسی کرده و دوباره تلاش کنید.', false);
+                 }).finally(() => {
+                    // **این بلاک همیشه اجرا می‌شود، چه موفقیت چه خطا**
+                    // بازگرداندن دکمه به حالت عادی
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalButtonText;
+                 });
+            });
+
+            // --- Event listener اولیه برای اولین فیلد معنی ---
+            const firstDefinitionInput = termList.querySelector('.definition-input');
+            if (firstDefinitionInput) {
+                firstDefinitionInput.addEventListener('keydown', handleEnterKey);
+                // پاک کردن خطا هنگام تایپ برای فیلدهای اولیه
+                firstDefinitionInput.addEventListener('input', () => clearError(firstDefinitionInput));
+                const firstTermInput = termList.querySelector('.term-input');
+                if (firstTermInput) firstTermInput.addEventListener('input', () => clearError(firstTermInput));
+            }
+             // پاک کردن خطا هنگام تایپ برای فیلدهای نام و بخش
+             document.getElementById('user-name').addEventListener('input', (e) => clearError(e.target));
+             document.getElementById('department').addEventListener('input', (e) => clearError(e.target));
+
+
+            // --- آپدیت اولیه شمارنده ---
+            updateCounterDisplay();
+            // بررسی وضعیت دکمه افزودن در ابتدا (اگر maxTerms=1 بود)
+            if (termCounter >= maxTerms) {
+                addTermBtn.disabled = true;
+            }
+
+        });
+        // --- End JavaScript ---
+    </script>
+
 </body>
 </html>
